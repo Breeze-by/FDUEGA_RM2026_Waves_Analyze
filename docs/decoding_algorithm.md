@@ -5,26 +5,13 @@
 ## 算法总览
 
 ```mermaid
-flowchart TD
-    A["Pluto 接收 IQ 采样"] --> B["频偏校正与重采样至 1 MHz"]
-    B --> C["240 阶复数低通滤波"]
-    C --> D["相邻复样本相位差鉴频"]
-    D --> E{"波源类型"}
-    E -->|信息波| F["鉴频结果直通"]
-    E -->|干扰波| G["BT=0.35 高斯 FIR 滤波"]
-    F --> H["RMS 归一化"]
-    G --> H
-    H --> I["Zero-Crossing 符号同步<br/>SPS = 47"]
-    I --> J["硬判决得到 bit 流"]
-    J --> K["精确搜索 64 bit Access Code<br/>保留多个对齐候选"]
-    K --> L["校验 27 字节 OTA 包<br/>Access Code + 00 0F 00 0F"]
-    L --> M["按顺序拼接 15 字节 OTA payload"]
-    M --> N["搜索 A5 协议帧<br/>校验长度、CRC8、CRC16"]
-    N --> O{"有效 cmd_id"}
-    O -->|"0x0A01 ~ 0x0A05"| P["五类信息独立缓存<br/>维护 valid / fresh"]
-    P --> Q["打包 102 字节 InfoMsgBag v3"]
-    O -->|"0x0A06"| R["校验 6 字节字母数字密钥"]
-    R --> S["回传 02 + 6 字节 ASCII 密钥<br/>正式流程仅解析一级、二级"]
+flowchart LR
+    A["Pluto IQ 采样"] --> B["预处理<br/>频偏校正 · 重采样 · 低通"]
+    B --> C["GFSK 解调<br/>鉴频 · 滤波 · 符号同步"]
+    C --> D["空口同步<br/>Access Code · OTA 提取"]
+    D --> E["协议校验<br/>帧长 · CRC8 · CRC16"]
+    E -->|"0x0A01 ~ 0x0A05"| F["信息缓存<br/>InfoMsgBag v3"]
+    E -->|"0x0A06"| G["干扰密钥<br/>02 + 6 字节 ASCII"]
 ```
 
 信息波与干扰波共用 IQ 预处理、鉴频、符号同步、OTA 提取和协议 CRC 校验链路；区别在于鉴频后的滤波方式，以及有效业务帧进入缓存快照或密钥回传两个出口。
