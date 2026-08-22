@@ -6,6 +6,10 @@
 
 比赛实测使用微相 E310 开发板。该板提供 2T2R 射频通道，选用它是为了给后续 MIMO 接收开发预留硬件能力；当前正式代码仍按每块板单接收通道工作，尚未实现 MIMO。项目不强制使用 E310，ADALM-Pluto 或其他能够运行 Pluto 兼容固件、可由 libiio 和 MATLAB Pluto 支持包识别的 SDR 均可使用。
 
+比赛部署的雷达设备实物：
+
+![比赛部署的雷达设备实物](display/雷达实物图.png)
+
 ## 功能
 
 - 支持红方、蓝方信息波：`red_broadcast`、`blue_broadcast`。
