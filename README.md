@@ -1,8 +1,10 @@
 # RM2026 Pluto 电磁波解析
 
-本项目使用两块 ADALM-Pluto 接收并解析 RoboMaster 2026 雷达电磁波，覆盖信息波、一级/二级干扰波、双接收板故障接管、比赛状态驱动、解码结果缓存，以及向裁判系统和己方机器人发送解析结果的完整流程。
+本项目使用两块运行 Pluto 兼容固件的 SDR 接收并解析 RoboMaster 2026 雷达电磁波，覆盖信息波、一级/二级干扰波、双接收板故障接管、比赛状态驱动、解码结果缓存，以及向裁判系统和己方机器人发送解析结果的完整流程。
 
 项目采用 MATLAB 完成 Pluto 采集、GFSK 解调和空口协议解析，采用 Python 完成比赛状态、UDP 快照仲裁、裁判串口协议和业务消息调度。
+
+比赛实测使用微相 E310 开发板。该板提供 2T2R 射频通道，选用它是为了给后续 MIMO 接收开发预留硬件能力；当前正式代码仍按每块板单接收通道工作，尚未实现 MIMO。项目不强制使用 E310，ADALM-Pluto 或其他能够运行 Pluto 兼容固件、可由 libiio 和 MATLAB Pluto 支持包识别的 SDR 均可使用。
 
 ## 功能
 
@@ -145,7 +147,7 @@ RM2026_Waves_Analyze/
 - MATLAB 与 Communications Toolbox。
 - Communications Toolbox Support Package for Analog Devices ADALM-Pluto Radio。
 - `libiio-utils`、`iproute2`、`iputils-ping`。
-- 两块 ADALM-Pluto。
+- 两块运行 Pluto 兼容固件的 SDR；比赛实测为微相 E310。
 - RoboMaster 裁判系统串口。
 
 安装系统和 Python 依赖：
@@ -166,6 +168,30 @@ MATLAB 中执行 `supportPackageInstaller`，安装 PlutoSDR 支持包。
 信息波板：192.168.2.1
 干扰波板：192.168.3.1
 ```
+
+必须在两块板各自的 Pluto 固件 `config.txt` 中配置不同地址。建议一次只连接一块板，修改后安全弹出设备并重新上电。
+
+信息波板：
+
+```ini
+[NETWORK]
+hostname = pluto-info
+ipaddr = 192.168.2.1
+ipaddr_host = 192.168.2.10
+netmask = 255.255.255.0
+```
+
+干扰波板：
+
+```ini
+[NETWORK]
+hostname = pluto-jammer
+ipaddr = 192.168.3.1
+ipaddr_host = 192.168.3.10
+netmask = 255.255.255.0
+```
+
+如果所用兼容固件不通过 U 盘 `config.txt` 管理网络，应使用该固件提供的等效配置方式，最终必须保证 libiio 可分别通过 `ip:192.168.2.1` 和 `ip:192.168.3.1` 访问两块板。
 
 主机对应的 USB 网卡需要分别具有 `192.168.2.x/24` 和 `192.168.3.x/24` 地址。启动前执行：
 
