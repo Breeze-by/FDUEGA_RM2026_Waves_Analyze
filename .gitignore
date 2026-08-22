@@ -1,0 +1,33 @@
+# 本地正式配置与运行数据
+/config/wave.env
+/.runtime/
+/export/
+/waveform/RX_BLUE*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# MATLAB / Simulink
+*.asv
+*.m~
+*.mlx~
+*.slxc
+*.p
+slprj/
+sfprj/
+work/
+profile_results/
+matlab_crash_dump.*
+crash_dump.*
+
+# 日志、转储与编辑器临时文件
+*.log
+*.tmp
+*.bak
+*.dmp
+*.swp
+*~
+.DS_Store
+Thumbs.db

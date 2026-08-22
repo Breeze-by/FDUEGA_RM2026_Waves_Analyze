@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pluto 官方波源实时诊断</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">RM2026 · 正式接收链路</p>
+      <h1>Pluto 官方波源实时诊断</h1>
+      <p>统一查看频谱、瀑布图、底层 IQ、解析频率与协议内容</p>
+    </div>
+    <div class="status-wrap">
+      <span id="connectionDot" class="dot idle"></span>
+      <span id="globalStatus">尚未启动</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="control-panel">
+      <div class="channel-config">
+        <h2>通道 A（正式信息波板）</h2>
+        <label>Pluto 地址<input id="radioA" value="ip:192.168.2.1"></label>
+        <label>接收波源<select id="sourceA"></select></label>
+        <div class="channel-actions"><button id="startA" class="primary">启动通道 A</button><button id="stopA" class="danger" disabled>停止 A</button></div>
+        <p id="messageA" class="channel-message"></p>
+      </div>
+      <div class="channel-config">
+        <h2>通道 B（正式干扰波板）</h2>
+        <label>Pluto 地址<input id="radioB" value="ip:192.168.3.1"></label>
+        <label>接收波源<select id="sourceB"></select></label>
+        <div class="channel-actions"><button id="startB" class="primary">启动通道 B</button><button id="stopB" class="danger" disabled>停止 B</button></div>
+        <p id="messageB" class="channel-message"></p>
+      </div>
+    </section>
+
+    <section class="notice">
+      <strong>固定正式参数：</strong>页面只允许选择 Pluto IP 与波源。采样率、带宽、AGC、增益策略、滤波、同步及解析窗口全部使用正式比赛配置。每路启动前都会实际连接 IIO 设备，预检失败不会创建 MATLAB worker。
+    </section>
+
+    <section class="channels">
+      <article class="channel" data-channel="A">
+        <div class="channel-head">
+          <div><span class="channel-tag">A</span><h2 id="titleA">等待配置</h2></div>
+          <span id="stateA" class="state-chip">未运行</span>
+        </div>
+        <div id="metricsA" class="metrics"></div>
+        <div id="infoRatesA" class="info-rates" hidden></div>
+        <div class="plot-grid">
+          <figure class="wide"><figcaption>绝对频谱与正式带宽</figcaption><canvas id="spectrumA"></canvas></figure>
+          <figure><figcaption>频谱瀑布</figcaption><canvas id="waterfallA"></canvas></figure>
+          <figure><figcaption>解析成功率趋势</figcaption><canvas id="historyA"></canvas></figure>
+        </div>
+        <div class="protocol-panel"><h3 id="decodedTitleA">已解析业务字段</h3><div id="decodedA" class="decoded-details empty">等待数据</div><div id="recentBlockA"><h3>最近协议帧</h3><div id="commandsA" class="command-counts"></div><div id="framesA" class="frames empty">等待数据</div></div></div>
+      </article>
+
+      <article class="channel" data-channel="B">
+        <div class="channel-head">
+          <div><span class="channel-tag">B</span><h2 id="titleB">等待配置</h2></div>
+          <span id="stateB" class="state-chip">未运行</span>
+        </div>
+        <div id="metricsB" class="metrics"></div>
+        <div id="infoRatesB" class="info-rates" hidden></div>
+        <div class="plot-grid">
+          <figure class="wide"><figcaption>绝对频谱与正式带宽</figcaption><canvas id="spectrumB"></canvas></figure>
+          <figure><figcaption>频谱瀑布</figcaption><canvas id="waterfallB"></canvas></figure>
+          <figure><figcaption>解析成功率趋势</figcaption><canvas id="historyB"></canvas></figure>
+        </div>
+        <div class="protocol-panel"><h3 id="decodedTitleB">已解析业务字段</h3><div id="decodedB" class="decoded-details empty">等待数据</div><div id="recentBlockB"><h3>最近协议帧</h3><div id="commandsB" class="command-counts"></div><div id="framesB" class="frames empty">等待数据</div></div></div>
+      </article>
+    </section>
+  </main>
+  <script src="/static/app.js?v=20260804-3"></script>
+</body>
+</html>

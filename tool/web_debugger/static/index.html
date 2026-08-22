@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RM2026 电磁波网页调试器</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>RM2026 电磁波调试器</h1>
+      <p id="projectRoot"></p>
+    </div>
+    <div class="actions">
+      <button id="refreshJobs" type="button">刷新</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <nav class="tabs" aria-label="调试功能">
+      <button class="tab active" data-tab="sim">仿真</button>
+      <button class="tab" data-tab="tx">Pluto 发射</button>
+      <button class="tab" data-tab="rx">Pluto 接收</button>
+      <button class="tab" data-tab="auto_rx">自动解析</button>
+      <button class="tab" data-tab="jobs">运行记录</button>
+    </nav>
+
+    <section class="workspace">
+      <form id="simForm" class="panel active" data-panel="sim">
+        <div class="section-title">
+          <h2>仿真链路</h2>
+          <button type="submit">开始仿真</button>
+        </div>
+        <div class="grid">
+          <label>波源<select name="SourceName" data-source></select></label>
+          <label>Eb/N0 向量<input name="EbN0dB_vec" value="0:1:25"></label>
+          <label>缓存重复次数<input name="RepeatInBuffer" type="number" value="40"></label>
+          <label class="check"><input name="UseMultipath" type="checkbox"> 多径</label>
+          <label>多径冲激响应<input name="H_chan" value="[1 0 0.25*exp(1j*0.7)]"></label>
+          <label class="check"><input name="UseFlatFade" type="checkbox"> 平坦衰落</label>
+        </div>
+      </form>
+
+      <form id="autoForm" class="panel" data-panel="auto_rx">
+        <div class="section-title">
+          <h2>自动接收解析</h2>
+          <button type="submit">处理状态</button>
+        </div>
+        <div class="grid">
+          <label class="check"><input name="GameStarted" type="checkbox"> 比赛开始</label>
+          <label>己方颜色
+            <select name="TeamColor">
+              <option value="red">红方</option>
+              <option value="blue">蓝方</option>
+            </select>
+          </label>
+          <label>干扰波等级
+            <select name="JammerLevel">
+              <option value="0">无</option>
+              <option value="1">一级</option>
+              <option value="2">二级</option>
+              <option value="3">干扰阶段结束（裁判反馈 3）</option>
+            </select>
+          </label>
+          <label>接收设备地址<input name="RxRadioID" value="ip:192.168.3.1"></label>
+          <label class="check"><input name="UseAGC" type="checkbox" checked> AGC</label>
+          <label>手动增益 dB<input name="RxGain_dB" type="number" step="0.1" value="20"></label>
+          <label>每帧采样点<input name="SamplesPerFrame" type="number" value="50000"></label>
+          <label>预热帧数<input name="WarmupFrames" type="number" value="4"></label>
+          <label>单次采集时长 s<input name="CaptureTimeSec" type="number" step="0.1" value="3"></label>
+          <label>最大尝试次数<input name="MaxAttempts" type="number" value="0"></label>
+          <label>解调低通 Hz<input name="BW_lpf" placeholder="空表示自动"></label>
+          <label class="check"><input name="EnablePlutoRx" type="checkbox" checked> 启用 Pluto 接收</label>
+        </div>
+      </form>
+
+      <form id="txForm" class="panel" data-panel="tx">
+        <div class="section-title">
+          <h2>Pluto 发射 / 波形生成</h2>
+          <button type="submit">运行发射</button>
+        </div>
+        <div class="grid">
+          <label>波源<select name="SourceName" data-source></select></label>
+          <label>发射设备地址<input name="RadioID" value="ip:192.168.2.1"></label>
+          <label>发射增益 dB<input name="TxGain_dB" type="number" step="0.1" value="0"></label>
+          <label>发射时长 s<input name="TxTimeSec" type="number" step="0.1" value="2"></label>
+          <label>缓存重复次数<input name="RepeatInBuffer" type="number" value="40"></label>
+          <label class="check"><input name="EnablePlutoTx" type="checkbox"> 启用 Pluto 实发</label>
+        </div>
+      </form>
+
+      <form id="rxForm" class="panel" data-panel="rx">
+        <div class="section-title">
+          <h2>Pluto 接收</h2>
+          <button type="submit">开始接收</button>
+        </div>
+        <div class="grid">
+          <label>波源<select name="SourceName" data-source></select></label>
+          <label>接收设备地址<input name="RxRadioID" value="ip:192.168.3.1"></label>
+          <label class="check"><input name="UseAGC" type="checkbox" checked> AGC</label>
+          <label>手动增益 dB<input name="RxGain_dB" type="number" step="0.1" value="20"></label>
+          <label>每帧采样点<input name="SamplesPerFrame" type="number" value="50000"></label>
+          <label>预热帧数<input name="WarmupFrames" type="number" value="4"></label>
+          <label>采集时长 s<input name="CaptureTimeSec" type="number" step="0.1" value="1.2"></label>
+          <label>解调低通 Hz<input name="BW_lpf" placeholder="空表示自动"></label>
+          <label class="check"><input name="EnablePlutoRx" type="checkbox" checked> 启用 Pluto 接收</label>
+        </div>
+      </form>
+
+      <section class="panel" data-panel="jobs">
+        <div class="section-title">
+          <h2>运行记录</h2>
+          <button id="refreshJobs2" type="button">刷新</button>
+        </div>
+        <div id="jobsList" class="jobs-list"></div>
+      </section>
+
+      <section class="result-panel active" data-result-panel="sim">
+        <div class="section-title">
+          <h2>仿真结果</h2>
+          <button class="stop-job" type="button" data-stop-task="sim" disabled>停止仿真</button>
+        </div>
+        <div class="job-meta" data-job-meta="sim">暂无仿真结果。</div>
+        <div class="metrics" data-metrics="sim"></div>
+        <div class="frames-box" data-frames="sim"></div>
+        <div class="artifacts" data-artifacts="sim"></div>
+        <pre data-log="sim"></pre>
+      </section>
+
+      <section class="result-panel" data-result-panel="tx">
+        <div class="section-title">
+          <h2>发射结果</h2>
+          <button class="stop-job" type="button" data-stop-task="tx" disabled>停止发射</button>
+        </div>
+        <div class="job-meta" data-job-meta="tx">暂无发射结果。</div>
+        <div class="metrics" data-metrics="tx"></div>
+        <div class="frames-box" data-frames="tx"></div>
+        <div class="artifacts" data-artifacts="tx"></div>
+        <pre data-log="tx"></pre>
+      </section>
+
+      <section class="result-panel" data-result-panel="rx">
+        <div class="section-title">
+          <h2>接收结果</h2>
+          <button class="stop-job" type="button" data-stop-task="rx" disabled>停止接收</button>
+        </div>
+        <div class="job-meta" data-job-meta="rx">暂无接收结果。</div>
+        <div class="metrics" data-metrics="rx"></div>
+        <div class="frames-box" data-frames="rx"></div>
+        <div class="artifacts" data-artifacts="rx"></div>
+        <pre data-log="rx"></pre>
+      </section>
+
+      <section class="result-panel" data-result-panel="auto_rx">
+        <div class="section-title">
+          <h2>自动解析结果</h2>
+          <button class="stop-job" type="button" data-stop-task="auto_rx" disabled>停止自动解析</button>
+        </div>
+        <div class="job-meta" data-job-meta="auto_rx">暂无自动解析结果。</div>
+        <div id="autoStateBox" class="auto-state"></div>
+        <div class="metrics" data-metrics="auto_rx"></div>
+        <div class="frames-box" data-frames="auto_rx"></div>
+        <div class="artifacts" data-artifacts="auto_rx"></div>
+        <pre data-log="auto_rx"></pre>
+      </section>
+    </section>
+  </main>
+
+  <div id="imageViewer" class="image-viewer" hidden>
+    <div class="image-viewer-bar">
+      <div id="imageViewerTitle"></div>
+      <button id="closeImageViewer" type="button">关闭</button>
+    </div>
+    <img id="imageViewerImg" alt="">
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
