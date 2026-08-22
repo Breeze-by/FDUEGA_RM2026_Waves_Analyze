@@ -53,12 +53,42 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A["Pluto IQ 采样"] --> B["预处理<br/>频偏校正 · 重采样 · 低通"]
-    B --> C["GFSK 解调<br/>鉴频 · 滤波 · 符号同步"]
-    C --> D["空口同步<br/>Access Code · OTA 提取"]
-    D --> E["协议校验<br/>帧长 · CRC8 · CRC16"]
-    E -->|"0x0A01 ~ 0x0A05"| F["信息缓存<br/>InfoMsgBag v3"]
-    E -->|"0x0A06"| G["干扰密钥<br/>02 + 6 字节 ASCII"]
+    A["Pluto IQ 采样"]
+    B["预处理<br/>频偏校正 · 重采样 · 低通"]
+    C["GFSK 解调<br/>鉴频 · 滤波 · 符号同步"]
+    D["空口同步<br/>Access Code · OTA 提取"]
+    E["协议校验<br/>帧长 · CRC8 · CRC16"]
+    F["信息缓存<br/>InfoMsgBag v3"]
+    G["干扰密钥<br/>02 + 6 字节 ASCII"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E -->|"0x0A01 ~ 0x0A05"| F
+    E -->|"0x0A06"| G
+
+    %% 主流程：低饱和蓝紫
+    classDef main fill:#EEF3FA,stroke:#6684A3,stroke-width:1.5px,color:#263746;
+
+    %% 协议校验：稍微强调
+    classDef check fill:#EEEFFA,stroke:#6F72A8,stroke-width:2px,color:#30335F;
+
+    %% 信息分支：淡蓝
+    classDef info fill:#EAF4F7,stroke:#5F8996,stroke-width:1.5px,color:#24434C;
+
+    %% 干扰分支：淡橙
+    classDef key fill:#FAF1E8,stroke:#B58663,stroke-width:1.5px,color:#5F412C;
+
+    class A,B,C,D main;
+    class E check;
+    class F info;
+    class G key;
+
+    %% 连线统一为柔和灰蓝
+    linkStyle 0,1,2,3 stroke:#778899,stroke-width:1.8px;
+    linkStyle 4 stroke:#5F8996,stroke-width:1.8px;
+    linkStyle 5 stroke:#B58663,stroke-width:1.8px;
 ```
 
 完整的参数、帧结构和连续解码机制见[解析算法说明](docs/decoding_algorithm.md)。
