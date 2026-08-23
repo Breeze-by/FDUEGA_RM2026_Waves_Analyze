@@ -10,6 +10,9 @@
 
 ![比赛部署的雷达设备实物](display/雷达实物图.png)
 
+> 🎬 **赛场实录：** [星云EGA与雷达与我](https://www.bilibili.com/video/BV1Vd846yEPq/?share_source=copy_web&vd_source=67c57643dbdb07c4faf1bef2262017cc)
+> 结合赛场实际表现剪辑，可直观看到本项目在比赛中的部署与应用效果。
+
 ## 功能
 
 - 支持红方、蓝方信息波：`red_broadcast`、`blue_broadcast`。
